@@ -1,3 +1,4 @@
+.vscode
 bin_unix
 source/src/ac_client
 source/src/ac_server
