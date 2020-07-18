@@ -1,0 +1,8 @@
+bin_unix
+source/src/ac_client
+source/src/ac_server
+source/enet
+source/**/.*
+source/**/*.o
+source/**/*.lo
+source/**/*.h.gch
