@@ -156,7 +156,7 @@ void getstring(char *text, ucharbuf &p, int len)
             *t = 0;
             return;
         }
-        *t = getint(p); // Why is this called getint if it gets a char?
+        *t = getint(p);
     } while (*t++);
     DEBUGVAR(text);
 }

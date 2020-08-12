@@ -3003,8 +3003,9 @@ void process(ENetPacket *packet, int sender, int chan)
             if (!text[0])
                 copystring(text, "unarmed");
             copystring(cl->name, text, MAXNAMELEN + 1);
-            getstring(text, p);
-            copystring(cl->pwd, text);
+            getstring(text, p);        // Reads up to 5000 characters from the client.
+            copystring(cl->pwd, text); // Copies the buffer to a string of size 260.
+            // Buffer overflow!
             getstring(text, p);
             filterlang(cl->lang, text);
             int wantrole = getint(p);
