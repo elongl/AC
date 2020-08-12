@@ -113,7 +113,7 @@ void getstring(char *text, ucharbuf &p, int len)
     {
         if(t>=&text[len]) { text[len-1] = 0; return; }
         if(!p.remaining()) { *t = 0; return; }
-        *t = getint(p);
+        *t = getint(p); // Why is this called getint if it gets a char?
     }
     while(*t++);
     DEBUGVAR(text);

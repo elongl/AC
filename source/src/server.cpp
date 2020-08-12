@@ -2654,6 +2654,7 @@ void process(ENetPacket *packet, int sender, int chan)
             cl->acversion = getint(p);
             cl->acbuildtype = getint(p);
             defformatstring(tags)(", AC: %d|%x", cl->acversion, cl->acbuildtype);
+            // Check if can buffer overflow `text`, perhaps `getstring` doesn't validate the bufsize.
             getstring(text, p);
             filtertext(text, text, 0, MAXNAMELEN);
             if(!text[0]) copystring(text, "unarmed");
