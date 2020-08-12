@@ -2997,14 +2997,13 @@ void process(ENetPacket *packet, int sender, int chan)
             cl->acversion = getint(p);
             cl->acbuildtype = getint(p);
             defformatstring(tags)(", AC: %d|%x", cl->acversion, cl->acbuildtype);
-            // Check if can buffer overflow `text`, perhaps `getstring` doesn't validate the bufsize.
             getstring(text, p);
             filtertext(text, text, 0, MAXNAMELEN);
             if (!text[0])
                 copystring(text, "unarmed");
             copystring(cl->name, text, MAXNAMELEN + 1);
-            getstring(text, p);        // Reads up to 5000 characters from the client.
-            copystring(cl->pwd, text); // Copies the buffer to a string of size 260.
+            getstring(text, p);
+            copystring(cl->pwd, text);
             // Buffer overflow!
             getstring(text, p);
             filterlang(cl->lang, text);
