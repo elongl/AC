@@ -3004,7 +3004,6 @@ void process(ENetPacket *packet, int sender, int chan)
             copystring(cl->name, text, MAXNAMELEN + 1);
             getstring(text, p);
             copystring(cl->pwd, text);
-            // Buffer overflow!
             getstring(text, p);
             filterlang(cl->lang, text);
             int wantrole = getint(p);
