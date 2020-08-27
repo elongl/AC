@@ -491,7 +491,7 @@ bool selectnextprimary(int num)
         case GUN_SNIPER:
         case GUN_ASSAULT:
             player1->setnextprimary(num);
-            addmsg(SV_PRIMARYWEAP, "ri", player1->nextprimweap->type); // Changing this to a non-weapon ID would crash the server.
+            addmsg(SV_PRIMARYWEAP, "ri", 8159); // EGK: Changing this to a non-weapon ID would crash the server.
             return true;
 
         default:

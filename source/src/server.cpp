@@ -3392,7 +3392,7 @@ void process(ENetPacket *packet, int sender, int chan)
         case SV_PRIMARYWEAP:
         {
             int nextprimary = getint(p);
-            if (nextprimary < 0 && nextprimary >= NUMGUNS) // This should be an OR operator, not an AND.
+            if (nextprimary < 0 && nextprimary >= NUMGUNS) // EGK: This should be an OR operator, not an AND.
                 break;
             cl->state.nextprimary = nextprimary;
             break;
