@@ -6,8 +6,8 @@ const char *timestring(bool local, const char *fmt)
 {
     static string asciitime;
     time_t t = time(NULL);
-    struct tm * timeinfo;
-    timeinfo = local ? localtime(&t) : gmtime (&t);
+    struct tm *timeinfo;
+    timeinfo = local ? localtime(&t) : gmtime(&t);
     strftime(asciitime, sizeof(string) - 1, fmt ? fmt : "%Y%m%d_%H.%M.%S", timeinfo); // sortable time for filenames
     return asciitime;
 }
@@ -20,11 +20,11 @@ const char *asctime()
 const char *numtime()
 {
     static string numt;
-    formatstring(numt)("%ld", (long long) time(NULL));
+    formatstring(numt)("%ld", (long long)time(NULL));
     return numt;
 }
 
-int mapdims[8];     // min/max X/Y and delta X/Y and min/max Z
+int mapdims[8]; // min/max X/Y and delta X/Y and min/max Z
 
 extern char *maplayout, *testlayout;
 extern int maplayout_factor, testlayout_factor, Mvolume, Marea, Mopen, SHhits;
@@ -43,18 +43,32 @@ mapstats *loadmapstats(const char *filename, bool getlayout)
     loopi(2) s.flags[i] = 0;
 
     stream *f = opengzfile(filename, "rb");
-    if(!f) return NULL;
+    if (!f)
+        return NULL;
     memset(&s.hdr, 0, sizeof(header));
-    if(f->read(&s.hdr, sizeof(header)-sizeof(int)*16)!=sizeof(header)-sizeof(int)*16 || (strncmp(s.hdr.head, "CUBE", 4) && strncmp(s.hdr.head, "ACMP",4))) { delete f; return NULL; }
+    if (f->read(&s.hdr, sizeof(header) - sizeof(int) * 16) != sizeof(header) - sizeof(int) * 16 || (strncmp(s.hdr.head, "CUBE", 4) && strncmp(s.hdr.head, "ACMP", 4)))
+    {
+        delete f;
+        return NULL;
+    }
     lilswap(&s.hdr.version, 4);
-    if(s.hdr.version>MAPVERSION || s.hdr.numents > MAXENTITIES || (s.hdr.version>=4 && f->read(&s.hdr.waterlevel, sizeof(int)*16)!=sizeof(int)*16)) { delete f; return NULL; }
-    if((s.hdr.version==7 || s.hdr.version==8) && !f->seek(sizeof(char)*128, SEEK_CUR)) { delete f; return NULL; }
-    if(s.hdr.version>=4)
+    if (s.hdr.version > MAPVERSION || s.hdr.numents > MAXENTITIES || (s.hdr.version >= 4 && f->read(&s.hdr.waterlevel, sizeof(int) * 16) != sizeof(int) * 16))
+    {
+        delete f;
+        return NULL;
+    }
+    if ((s.hdr.version == 7 || s.hdr.version == 8) && !f->seek(sizeof(char) * 128, SEEK_CUR))
+    {
+        delete f;
+        return NULL;
+    }
+    if (s.hdr.version >= 4)
     {
         lilswap(&s.hdr.waterlevel, 1);
         lilswap(&s.hdr.maprevision, 2);
     }
-    else s.hdr.waterlevel = -100000;
+    else
+        s.hdr.waterlevel = -100000;
     entity e;
     enttypes = new uchar[s.hdr.numents];
     entposs = new short[s.hdr.numents * 3];
@@ -63,16 +77,23 @@ mapstats *loadmapstats(const char *filename, bool getlayout)
         f->read(&e, sizeof(persistent_entity));
         lilswap((short *)&e, 4);
         TRANSFORMOLDENTITIES(s.hdr)
-        if(e.type == PLAYERSTART && (e.attr2 == 0 || e.attr2 == 1 || e.attr2 == 100)) s.spawns[e.attr2 == 100 ? 2 : e.attr2]++;
-        if(e.type == CTF_FLAG && (e.attr2 == 0 || e.attr2 == 1)) { s.flags[e.attr2]++; s.flagents[e.attr2] = i; }
+        if (e.type == PLAYERSTART && (e.attr2 == 0 || e.attr2 == 1 || e.attr2 == 100))
+            s.spawns[e.attr2 == 100 ? 2 : e.attr2]++;
+        if (e.type == CTF_FLAG && (e.attr2 == 0 || e.attr2 == 1))
+        {
+            s.flags[e.attr2]++;
+            s.flagents[e.attr2] = i;
+        }
         s.entcnt[e.type]++;
         enttypes[i] = e.type;
-        entposs[i * 3] = e.x; entposs[i * 3 + 1] = e.y; entposs[i * 3 + 2] = e.z + e.attr1;
+        entposs[i * 3] = e.x;
+        entposs[i * 3 + 1] = e.y;
+        entposs[i * 3 + 2] = e.z + e.attr1;
     }
     DELETEA(testlayout);
     int minfloor = 0;
     int maxceil = 0;
-    if(s.hdr.sfactor <= LARGEST_FACTOR && s.hdr.sfactor >= SMALLEST_FACTOR)
+    if (s.hdr.sfactor <= LARGEST_FACTOR && s.hdr.sfactor >= SMALLEST_FACTOR)
     {
         testlayout_factor = s.hdr.sfactor;
         int layoutsize = 1 << (testlayout_factor * 2);
@@ -88,57 +109,87 @@ mapstats *loadmapstats(const char *filename, bool getlayout)
             char *c = testlayout + k;
             int type = f->getchar();
             int n = 1;
-            switch(type)
+            switch (type)
             {
-                case 255:
+            case 255:
+            {
+                if (!t || (n = f->getchar()) < 0)
                 {
-                    if(!t || (n = f->getchar()) < 0) { fail = true; break; }
-                    memset(c, *t, n);
-                    k += n - 1;
+                    fail = true;
                     break;
                 }
-                case 254: // only in MAPVERSION<=2
-                    if(!t) { fail = true; break; }
-                    *c = *t;
-                    f->getchar(); f->getchar();
-                    break;
-                default:
-                    if(type<0 || type>=MAXTYPE)  { fail = true; break; }
-                    floor = f->getchar();
-                    ceil = f->getchar();
-                    if(floor >= ceil && ceil > -128) floor = ceil - 1;  // for pre 12_13
-                    diff = ceil - floor;
-                    if(type == FHF) floor = -128;
-                    if(floor!=-128 && floor<minfloor) minfloor = floor;
-                    if(ceil>maxceil) maxceil = ceil;
-                    f->getchar(); f->getchar();
-                    if(s.hdr.version>=2) f->getchar();
-                    if(s.hdr.version>=5) f->getchar();
-
-                case SOLID:
-                    *c = type == SOLID ? 127 : floor;
-                    f->getchar(); f->getchar();
-                    if(s.hdr.version<=2) { f->getchar(); f->getchar(); }
-                    break;
+                memset(c, *t, n);
+                k += n - 1;
+                break;
             }
-            if ( type != SOLID && diff > 6 )
+            case 254: // only in MAPVERSION<=2
+                if (!t)
+                {
+                    fail = true;
+                    break;
+                }
+                *c = *t;
+                f->getchar();
+                f->getchar();
+                break;
+            default:
+                if (type < 0 || type >= MAXTYPE)
+                {
+                    fail = true;
+                    break;
+                }
+                floor = f->getchar();
+                ceil = f->getchar();
+                if (floor >= ceil && ceil > -128)
+                    floor = ceil - 1; // for pre 12_13
+                diff = ceil - floor;
+                if (type == FHF)
+                    floor = -128;
+                if (floor != -128 && floor < minfloor)
+                    minfloor = floor;
+                if (ceil > maxceil)
+                    maxceil = ceil;
+                f->getchar();
+                f->getchar();
+                if (s.hdr.version >= 2)
+                    f->getchar();
+                if (s.hdr.version >= 5)
+                    f->getchar();
+
+            case SOLID:
+                *c = type == SOLID ? 127 : floor;
+                f->getchar();
+                f->getchar();
+                if (s.hdr.version <= 2)
+                {
+                    f->getchar();
+                    f->getchar();
+                }
+                break;
+            }
+            if (type != SOLID && diff > 6)
             {
                 // Lucas (10mar2013): Removed "pow2" because it was too strict
-                if (diff > MAXMHEIGHT) SHhits += /*pow2*/(diff-MAXMHEIGHT)*n;
+                if (diff > MAXMHEIGHT)
+                    SHhits += /*pow2*/ (diff - MAXMHEIGHT) * n;
                 Marea += n;
                 Mvolume += diff * n;
             }
-            if(fail) break;
+            if (fail)
+                break;
             t = c;
         }
-        if(fail) { DELETEA(testlayout); }
+        if (fail)
+        {
+            DELETEA(testlayout);
+        }
         else
         {
-            Mheight = Marea ? (float)Mvolume/Marea : 0;
+            Mheight = Marea ? (float)Mvolume / Marea : 0;
             Mopen = checkarea(testlayout_factor, testlayout);
         }
     }
-    if(getlayout)
+    if (getlayout)
     {
         DELETEA(maplayout);
         if (testlayout)
@@ -153,14 +204,18 @@ mapstats *loadmapstats(const char *filename, bool getlayout)
             loopk(8) mapdims[k] = k < 2 ? maplayoutssize : 0;
             loopk(layoutsize) if (testlayout[k] != 127)
             {
-                int cwx = k%maplayoutssize,
-                cwy = k/maplayoutssize;
-                if(cwx < mapdims[0]) mapdims[0] = cwx;
-                if(cwy < mapdims[1]) mapdims[1] = cwy;
-                if(cwx > mapdims[2]) mapdims[2] = cwx;
-                if(cwy > mapdims[3]) mapdims[3] = cwy;
+                int cwx = k % maplayoutssize,
+                    cwy = k / maplayoutssize;
+                if (cwx < mapdims[0])
+                    mapdims[0] = cwx;
+                if (cwy < mapdims[1])
+                    mapdims[1] = cwy;
+                if (cwx > mapdims[2])
+                    mapdims[2] = cwx;
+                if (cwy > mapdims[3])
+                    mapdims[3] = cwy;
             }
-            loopk(2) mapdims[k+4] = mapdims[k+2] - mapdims[k];
+            loopk(2) mapdims[k + 4] = mapdims[k + 2] - mapdims[k];
             mapdims[6] = minfloor;
             mapdims[7] = maxceil;
         }
@@ -180,20 +235,25 @@ mapstats *loadmapstats(const char *filename, bool getlayout)
 #if defined(WIN32) && !defined(_DEBUG) && !defined(__GNUC__)
 void stackdumper(unsigned int type, EXCEPTION_POINTERS *ep)
 {
-    if(!ep) fatal("unknown type");
+    if (!ep)
+        fatal("unknown type");
     EXCEPTION_RECORD *er = ep->ExceptionRecord;
     CONTEXT *context = ep->ContextRecord;
     string out, t;
-    formatstring(out)("Win32 Exception: 0x%x [0x%x]\n\n", er->ExceptionCode, er->ExceptionCode==EXCEPTION_ACCESS_VIOLATION ? er->ExceptionInformation[1] : -1);
+    formatstring(out)("Win32 Exception: 0x%x [0x%x]\n\n", er->ExceptionCode, er->ExceptionCode == EXCEPTION_ACCESS_VIOLATION ? er->ExceptionInformation[1] : -1);
     STACKFRAME sf = {{context->Eip, 0, AddrModeFlat}, {}, {context->Ebp, 0, AddrModeFlat}, {context->Esp, 0, AddrModeFlat}, 0};
     SymInitialize(GetCurrentProcess(), NULL, TRUE);
 
-    while(::StackWalk(IMAGE_FILE_MACHINE_I386, GetCurrentProcess(), GetCurrentThread(), &sf, context, NULL, ::SymFunctionTableAccess, ::SymGetModuleBase, NULL))
+    while (::StackWalk(IMAGE_FILE_MACHINE_I386, GetCurrentProcess(), GetCurrentThread(), &sf, context, NULL, ::SymFunctionTableAccess, ::SymGetModuleBase, NULL))
     {
-        struct { IMAGEHLP_SYMBOL sym; string n; } si = { { sizeof( IMAGEHLP_SYMBOL ), 0, 0, 0, sizeof(string) } };
-        IMAGEHLP_LINE li = { sizeof( IMAGEHLP_LINE ) };
+        struct
+        {
+            IMAGEHLP_SYMBOL sym;
+            string n;
+        } si = {{sizeof(IMAGEHLP_SYMBOL), 0, 0, 0, sizeof(string)}};
+        IMAGEHLP_LINE li = {sizeof(IMAGEHLP_LINE)};
         DWORD off;
-        if(SymGetSymFromAddr(GetCurrentProcess(), (DWORD)sf.AddrPC.Offset, &off, &si.sym) && SymGetLineFromAddr(GetCurrentProcess(), (DWORD)sf.AddrPC.Offset, &off, &li))
+        if (SymGetSymFromAddr(GetCurrentProcess(), (DWORD)sf.AddrPC.Offset, &off, &si.sym) && SymGetLineFromAddr(GetCurrentProcess(), (DWORD)sf.AddrPC.Offset, &off, &li))
         {
             char *del = strrchr(li.FileName, '\\');
             formatstring(t)("%s - %s [%d]\n", si.sym.Name, del ? del + 1 : li.FileName, li.LineNumber);
@@ -218,14 +278,13 @@ struct signalbinder
         void *array[BTSIZE];
         int n = backtrace(array, BTSIZE);
         char **symbols = backtrace_symbols(array, n);
-        for(int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
             printf("%s\n", symbols[i]);
         }
         free(symbols);
 
         fatal("AssaultCube error (%d)", sig);
-
     }
 
     signalbinder()
@@ -245,7 +304,6 @@ signalbinder sigbinder;
 
 #endif
 
-
 ///////////////////////// misc tools ///////////////////////
 
 bool cmpb(void *b, int n, enet_uint32 c)
@@ -253,7 +311,7 @@ bool cmpb(void *b, int n, enet_uint32 c)
     ENetBuffer buf;
     buf.data = b;
     buf.dataLength = n;
-    return enet_crc32(&buf, 1)==c;
+    return enet_crc32(&buf, 1) == c;
 }
 
 bool cmpf(char *fn, enet_uint32 c)
@@ -283,11 +341,13 @@ bool isbigendian()
 
 void strtoupper(char *t, const char *s)
 {
-    if(!s) s = t;
-    while(*s)
+    if (!s)
+        s = t;
+    while (*s)
     {
         *t = toupper(*s);
-        t++; s++;
+        t++;
+        s++;
     }
     *t = '\0';
 }
@@ -296,11 +356,13 @@ const char *atoip(const char *s, enet_uint32 *ip)
 {
     unsigned int d[4];
     int n;
-    if(!s || sscanf(s, "%u.%u.%u.%u%n", d, d + 1, d + 2, d + 3, &n) != 4) return NULL;
+    if (!s || sscanf(s, "%u.%u.%u.%u%n", d, d + 1, d + 2, d + 3, &n) != 4)
+        return NULL;
     *ip = 0;
     loopi(4)
     {
-        if(d[i] > 255) return NULL;
+        if (d[i] > 255)
+            return NULL;
         *ip = (*ip << 8) + d[i];
     }
     return s + n;
@@ -308,17 +370,20 @@ const char *atoip(const char *s, enet_uint32 *ip)
 
 const char *atoipr(const char *s, iprange *ir)
 {
-    if((s = atoip(s, &ir->lr)) == NULL) return NULL;
+    if ((s = atoip(s, &ir->lr)) == NULL)
+        return NULL;
     ir->ur = ir->lr;
     s += strspn(s, " \t");
-    if(*s == '-')
+    if (*s == '-')
     {
-        if(!(s = atoip(s + 1, &ir->ur)) || ir->lr > ir->ur) return NULL;
+        if (!(s = atoip(s + 1, &ir->ur)) || ir->lr > ir->ur)
+            return NULL;
     }
-    else if(*s == '/')
+    else if (*s == '/')
     {
         int m, n;
-        if(sscanf(s + 1, "%d%n", &m, &n) != 1 || m < 0 || m > 32) return NULL;
+        if (sscanf(s + 1, "%d%n", &m, &n) != 1 || m < 0 || m > 32)
+            return NULL;
         unsigned long bm = (1 << (32 - m)) - 1;
         ir->lr &= ~bm;
         ir->ur |= bm;
@@ -341,21 +406,25 @@ const char *iprtoa(const struct iprange &ipr)
     static string s[2];
     static int buf = 0;
     buf = (buf + 1) % 2;
-    if(ipr.lr == ipr.ur) copystring(s[buf], iptoa(ipr.lr));
-    else formatstring(s[buf])("%s-%s", iptoa(ipr.lr), iptoa(ipr.ur));
+    if (ipr.lr == ipr.ur)
+        copystring(s[buf], iptoa(ipr.lr));
+    else
+        formatstring(s[buf])("%s-%s", iptoa(ipr.lr), iptoa(ipr.ur));
     return s[buf];
 }
 
 int cmpiprange(const struct iprange *a, const struct iprange *b)
 {
-    if(a->lr < b->lr) return -1;
-    if(a->lr > b->lr) return 1;
+    if (a->lr < b->lr)
+        return -1;
+    if (a->lr > b->lr)
+        return 1;
     return 0;
 }
 
 int cmpipmatch(const struct iprange *a, const struct iprange *b)
 {
-    return - (a->lr < b->lr) + (a->lr > b->ur);
+    return -(a->lr < b->lr) + (a->lr > b->ur);
 }
 
 char *concatformatstring(char *d, const char *s, ...)
@@ -369,20 +438,20 @@ const char *hiddenpwd(const char *pwd, int showchars)
     static int sc = 3;
     static string text;
     copystring(text, pwd);
-    if(showchars > 0) sc = showchars;
-    for(int i = (int)strlen(text) - 1; i >= sc; i--) text[i] = '*';
+    if (showchars > 0)
+        sc = showchars;
+    for (int i = (int)strlen(text) - 1; i >= sc; i--)
+        text[i] = '*';
     return text;
 }
 //////////////// geometry utils ////////////////
 
-static inline float det2x2(float a, float b, float c, float d) { return a*d - b*c; }
+static inline float det2x2(float a, float b, float c, float d) { return a * d - b * c; }
 static inline float det3x3(float a1, float a2, float a3,
                            float b1, float b2, float b3,
                            float c1, float c2, float c3)
 {
-    return a1 * det2x2(b2, b3, c2, c3)
-         - b1 * det2x2(a2, a3, c2, c3)
-         + c1 * det2x2(a2, a3, b2, b3);
+    return a1 * det2x2(b2, b3, c2, c3) - b1 * det2x2(a2, a3, c2, c3) + c1 * det2x2(a2, a3, b2, b3);
 }
 
 float glmatrixf::determinant() const
@@ -392,10 +461,7 @@ float glmatrixf::determinant() const
           c1 = v[8], c2 = v[9], c3 = v[10], c4 = v[11],
           d1 = v[12], d2 = v[13], d3 = v[14], d4 = v[15];
 
-    return a1 * det3x3(b2, b3, b4, c2, c3, c4, d2, d3, d4)
-         - b1 * det3x3(a2, a3, a4, c2, c3, c4, d2, d3, d4)
-         + c1 * det3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4)
-         - d1 * det3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
+    return a1 * det3x3(b2, b3, b4, c2, c3, c4, d2, d3, d4) - b1 * det3x3(a2, a3, a4, c2, c3, c4, d2, d3, d4) + c1 * det3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4) - d1 * det3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
 }
 
 void glmatrixf::adjoint(const glmatrixf &m)
@@ -405,35 +471,35 @@ void glmatrixf::adjoint(const glmatrixf &m)
           c1 = m.v[8], c2 = m.v[9], c3 = m.v[10], c4 = m.v[11],
           d1 = m.v[12], d2 = m.v[13], d3 = m.v[14], d4 = m.v[15];
 
-    v[0]  =  det3x3(b2, b3, b4, c2, c3, c4, d2, d3, d4);
-    v[1]  = -det3x3(a2, a3, a4, c2, c3, c4, d2, d3, d4);
-    v[2]  =  det3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4);
-    v[3]  = -det3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
+    v[0] = det3x3(b2, b3, b4, c2, c3, c4, d2, d3, d4);
+    v[1] = -det3x3(a2, a3, a4, c2, c3, c4, d2, d3, d4);
+    v[2] = det3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4);
+    v[3] = -det3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
 
-    v[4]  = -det3x3(b1, b3, b4, c1, c3, c4, d1, d3, d4);
-    v[5]  =  det3x3(a1, a3, a4, c1, c3, c4, d1, d3, d4);
-    v[6]  = -det3x3(a1, a3, a4, b1, b3, b4, d1, d3, d4);
-    v[7]  =  det3x3(a1, a3, a4, b1, b3, b4, c1, c3, c4);
+    v[4] = -det3x3(b1, b3, b4, c1, c3, c4, d1, d3, d4);
+    v[5] = det3x3(a1, a3, a4, c1, c3, c4, d1, d3, d4);
+    v[6] = -det3x3(a1, a3, a4, b1, b3, b4, d1, d3, d4);
+    v[7] = det3x3(a1, a3, a4, b1, b3, b4, c1, c3, c4);
 
-    v[8]  =  det3x3(b1, b2, b4, c1, c2, c4, d1, d2, d4);
-    v[9]  = -det3x3(a1, a2, a4, c1, c2, c4, d1, d2, d4);
-    v[10] =  det3x3(a1, a2, a4, b1, b2, b4, d1, d2, d4);
+    v[8] = det3x3(b1, b2, b4, c1, c2, c4, d1, d2, d4);
+    v[9] = -det3x3(a1, a2, a4, c1, c2, c4, d1, d2, d4);
+    v[10] = det3x3(a1, a2, a4, b1, b2, b4, d1, d2, d4);
     v[11] = -det3x3(a1, a2, a4, b1, b2, b4, c1, c2, c4);
 
     v[12] = -det3x3(b1, b2, b3, c1, c2, c3, d1, d2, d3);
-    v[13] =  det3x3(a1, a2, a3, c1, c2, c3, d1, d2, d3);
+    v[13] = det3x3(a1, a2, a3, c1, c2, c3, d1, d2, d3);
     v[14] = -det3x3(a1, a2, a3, b1, b2, b3, d1, d2, d3);
-    v[15] =  det3x3(a1, a2, a3, b1, b2, b3, c1, c2, c3);
+    v[15] = det3x3(a1, a2, a3, b1, b2, b3, c1, c2, c3);
 }
 
 bool glmatrixf::invert(const glmatrixf &m, float mindet)
 {
     float a1 = m.v[0], b1 = m.v[4], c1 = m.v[8], d1 = m.v[12];
     adjoint(m);
-    float det = a1*v[0] + b1*v[1] + c1*v[2] + d1*v[3]; // float det = m.determinant();
-    if(fabs(det) < mindet) return false;
-    float invdet = 1/det;
+    float det = a1 * v[0] + b1 * v[1] + c1 * v[2] + d1 * v[3]; // float det = m.determinant();
+    if (fabs(det) < mindet)
+        return false;
+    float invdet = 1 / det;
     loopi(16) v[i] *= invdet;
     return true;
 }
-
