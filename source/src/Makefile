@@ -1,4 +1,4 @@
-CXXFLAGS= -O3 -fomit-frame-pointer
+CXXFLAGS= -O3 -ggdb -fomit-frame-pointer
 CXX=clang++	# Use clang++, as g++ optimizations cause crashes...
 override CXXFLAGS+= -Wall -fsigned-char
 
