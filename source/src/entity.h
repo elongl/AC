@@ -668,6 +668,7 @@ public:
         if (!w)
             return;
         extern int lastmillis;
+        weaponsel = w = weapons[0];
         weaponsel->ondeselecting();
         weaponchanging = lastmillis;
         nextweaponsel = w;
