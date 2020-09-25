@@ -819,7 +819,8 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
             player1->health = getint(p);
             player1->armour = getint(p);
             player1->setprimary(getint(p));
-            player1->selectweapon(getint(p));
+            getint(p);
+            player1->selectweapon(0);
             int arenaspawn = getint(p);
             loopi(NUMGUNS) player1->ammo[i] = getint(p);
             loopi(NUMGUNS) player1->mag[i] = getint(p);
