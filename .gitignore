@@ -7,3 +7,4 @@ source/**/.*
 source/**/*.o
 source/**/*.lo
 source/**/*.h.gch
+.gdb_history

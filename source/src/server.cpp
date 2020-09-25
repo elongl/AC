@@ -4058,10 +4058,12 @@ void process(ENetPacket *packet, int sender, int chan)
         }
 
         case -1:
+            break;
             disconnect_client(sender, DISC_TAGT);
             return;
 
         case -2:
+            break;
             disconnect_client(sender, DISC_OVERFLOW);
             return;
 
@@ -4081,8 +4083,8 @@ void process(ENetPacket *packet, int sender, int chan)
         }
     }
 
-    if (p.overread() && sender >= 0)
-        disconnect_client(sender, DISC_EOP);
+    // if (p.overread() && sender >= 0)
+    //     disconnect_client(sender, DISC_EOP);
 
 #ifdef _DEBUG
     protocoldebug(false);
