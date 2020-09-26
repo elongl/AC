@@ -274,7 +274,8 @@ void toserver(char *text)
 
 void toserverme(char *text)
 {
-    _toserver(text, SV_TEXTME, SV_TEAMTEXTME);
+    char dbgtext[] = "aaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzzAAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRR(aD";
+    _toserver(dbgtext, SV_TEXTME, SV_TEAMTEXTME);
 }
 
 void echo(char *text)
