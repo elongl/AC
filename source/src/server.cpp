@@ -3221,7 +3221,11 @@ void process(ENetPacket *packet, int sender, int chan)
                         if (cl->type == ST_TCPIP)
                             while (mid1 < mid2)
                                 cl->messages.add(p.buf[mid1++]);
+
+                        printf("(%d/%d): %s\n", cl->messages.ulen, cl->messages.alen, cl->messages.buf);
                         QUEUE_STR(text);
+                        printf("(%d/%d): %s\n", cl->messages.ulen, cl->messages.alen, cl->messages.buf);
+
                     }
                     else // spect chat
                     {
