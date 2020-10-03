@@ -154,7 +154,15 @@ bool buildworldstate()
     }
     if (msize)
     {
-        recordpacket(1, ws.messages.getbuf(), msize);
+        uchar *wsmessages = ws.messages.getbuf();
+        printf("msize: %d, worldstate messages: ", msize);
+        for (int i = 0; i < msize; i++)
+        {
+            printf("%x ", wsmessages[i]);
+        }
+        printf("\n");
+
+        recordpacket(1, wsmessages, msize);
         ucharbuf p = ws.messages.reserve(msize);
         p.put(ws.messages.getbuf(), msize);
         ws.messages.addbuf(p);
