@@ -13,15 +13,6 @@ def is_printable(_bytes):
     return True
 
 
-def get_possibly_called_funcs():
-    funcs = []
-    for func in p.functions.values():
-        goal = p32(func.address - VTABLE_WRITE_OFFSET).rstrip(b'\0')
-        if is_printable(goal):
-            funcs.append(func.name)
-    return funcs
-
-
 def get_possibly_called_gots():
     funcs = []
     for func, addr in p.got.items():
