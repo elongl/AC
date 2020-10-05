@@ -1,53 +1,50 @@
 # Interesting
-system
-strcpy
-vfprintf
-fprintf
-backtrace
-strcat
-fwrite / fwrite_unlocked
-__isoc99_sscanf
-fread_unlocked
+system: (aD
+strcpy: XaD
+fprintf / vfprintf: hbD (bD
+strcat:  cD
+fwrite / fwrite_unlocked: pcD X`D
+__isoc99_sscanf: paD
+fread_unlocked: 0bD
 
-
-
-malloc
-_ZTVN10__cxxabiv120__si_class_type_infoE
-strstr
-isxdigit
-socket
-_ZSt9terminatev
-recvmsg
-accept
-strtoul
-strchr
-uncompress
-__cxa_begin_catch
-strspn
-perror
-inflateInit2_
-gmtime
-openlog
-__cxa_atexit
-time
-_ZdlPv
-select
-closelog
-gethostbyaddr_r
-shutdown
-tmpfile
-putchar
-strcmp
-strtol
-inflateReset
-tolower
-setsockopt
-remove
-__cxa_guard_acquire
-sqrtf
-toupper
-frexp
-inet_pton
-__cxa_pure_virtual
-qsort
-close
+malloc: p}D
+_ZTVN10__cxxabiv120__si_class_type_infoE: H]D
+strstr:  `D
+isxdigit: (`D
+socket: 0`D
+_ZSt9terminatev: 8`D
+recvmsg: @`D
+accept: H`D
+strtoul: P`D
+strchr: ``D
+uncompress: h`D
+__cxa_begin_catch: p`D
+strspn: x`D
+perror:  aD
+inflateInit2_: 0aD
+gmtime: 8aD
+openlog: @aD
+__cxa_atexit: HaD
+time: PaD
+_ZdlPv: `aD
+select: haD
+closelog: xaD
+gethostbyaddr_r:  bD
+shutdown: 8bD
+tmpfile: @bD
+putchar: HbD
+strcmp: PbD
+strtol: XbD
+inflateReset: `bD
+tolower: pbD
+backtrace: xbD
+setsockopt: (cD
+remove: 0cD
+__cxa_guard_acquire: 8cD
+sqrtf: @cD
+toupper: HcD
+frexp: PcD
+inet_pton: XcD
+__cxa_pure_virtual: `cD
+qsort: hcD
+close: xcD
