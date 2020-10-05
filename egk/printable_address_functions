@@ -1,8 +1,8 @@
 # Interesting
-system: (aD
-strcpy: XaD
-fprintf / vfprintf: hbD (bD
-strcat:  cD
+system: (aD // Can't control the command.
+strcpy: XaD // demorecord is overriden by the stamp array.
+strcat:  cD // demorecord is overriden by the stamp array.
+fprintf / vfprintf: hbD (bD // Can't control the FILE struct so the format attack fails.
 fwrite / fwrite_unlocked: pcD X`D
 __isoc99_sscanf: paD
 fread_unlocked: 0bD
