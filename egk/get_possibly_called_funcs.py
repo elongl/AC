@@ -14,9 +14,19 @@ def is_printable(_bytes):
 
 
 def get_possibly_called_gots():
-    funcs = []
+    funcs = {}
     for func, addr in p.got.items():
-        goal = p32(addr - VTABLE_WRITE_OFFSET).rstrip(b'\0')
-        if is_printable(goal):
-            funcs.append(func)
+        payload = p32(addr - VTABLE_WRITE_OFFSET).rstrip(b'\0')
+        if is_printable(payload):
+            funcs[func] = payload.decode()
     return funcs
+
+
+def main():
+    available_gots = get_possibly_called_gots()
+    for func, payload in available_gots.items():
+        print(f'{func}: {payload}')
+
+
+if __name__ == "__main__":
+    main()
