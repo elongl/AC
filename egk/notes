@@ -1,0 +1,22 @@
+# Lead
+- Overwrite members + vtable of demorecord.
+- Make isprint or isspace return true by overwriting their GOT.
+- See what's on the stack when invoking sscanf.
+
+
+
+# Ideas
+- Try to exploit the heap overflow not as the first client.
+- Overwriting the NULL terminator of name on client for infoleak purposes.
+
+
+
+# Notes
+- The other member that is being overwritten at spawnstate is events' buf.
+
+
+
+# History
+- Change the size of alen "legitimately" in order to get a different bin and see what memory lays there.
+- Parse all vtables in the executable (didn't work because cannot partially overwrite pointer to point to a different vtable)
+
