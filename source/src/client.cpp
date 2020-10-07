@@ -280,7 +280,7 @@ void toserverme(char *text)
     // func call
     char dbgtext[] = "aaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz"
                      "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRR"
-                     "paD";
+                     "dGI";
     _toserver(dbgtext, SV_TEXTME, SV_TEAMTEXTME);
 }
 
@@ -444,7 +444,7 @@ void addmsg(int type, const char *fmt, ...)
     int num = nums ? 0 : numi, msgsize = msgsizelookup(type);
     if (msgsize && num != msgsize)
     {
-        fatal("inconsistent msg size for %d (%d != %d)", type, num, msgsize);
+        // fatal("inconsistent msg size for %d (%d != %d)", type, num, msgsize);
     }
     int len = p.length();
     messages.add(len & 0xFF);
@@ -641,7 +641,9 @@ void sendintro()
     clientpassword[0] = '\0';
     connectrole = CR_DEFAULT;
     putint(p, player1->nextprimweap->type);
-    loopi(2) putint(p, player1->skin(i));
+    // loopi(2) putint(p, player1->skin(i));
+    putint(p, 0xdeadbeef);
+    putint(p, 0x0);
     sendpackettoserv(1, p.finalize());
 }
 
