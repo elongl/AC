@@ -3380,6 +3380,7 @@ void process(ENetPacket *packet, int sender, int chan)
         case SV_ITEMPICKUP:
         {
             int n = getint(p);
+            break;
             if (!arenaround || arenaround - gamemillis > 2000)
             {
                 gameevent &pickup = cl->addevent();
@@ -4082,6 +4083,7 @@ void process(ENetPacket *packet, int sender, int chan)
         default:
         {
             int size = msgsizelookup(type);
+            printf("Received default: %s\n", messagenames[type]);
             if (size <= 0)
             {
                 if (sender >= 0)
