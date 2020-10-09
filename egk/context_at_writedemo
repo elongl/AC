@@ -1,0 +1,66 @@
+0x0000000000410101      477         demorecord->write(stamp, sizeof(stamp));
+LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA
+─────────────────────────────────────────────────[ REGISTERS ]─────────────────────────────────────────────────
+RAX  0x494764
+RBX  0x102aa30 ◂— 0x6161610801b40058 /* 'X' */
+RCX  0x7f1ff32d31e7 (write+23) ◂— cmp    rax, -0x1000 /* 'H=' */
+*RDX  0xc
+RDI  0x1042480 ◂— 0x494764 /* 'dGI' */
+RSI  0x7ffdbaebfd04 ◂— 0x100004836 /* '6H' */
+R8   0xa
+R9   0x2
+R10  0x439335 ◂— 0x6972003269720020 /* ' ' */
+R11  0x246
+R12  0xb8
+R13  0x102d8b4 ◂— 0x102aa3000000000
+R14  0x0
+R15  0x1
+RBP  0xb8
+RSP  0x7ffdbaebfcc0 —▸ 0x102d8a0 —▸ 0x102d870 —▸ 0x10345a0 —▸ 0x1034570 ◂— ...
+*RIP  0x410101 (buildworldstate()+2177) ◂— call   qword ptr [rax + 0x40]
+──────────────────────────────────────────────────[ DISASM ]───────────────────────────────────────────────────
+0x4100e7 <buildworldstate()+2151>    mov    dword ptr [rsp + 0x48], 1
+0x4100ef <buildworldstate()+2159>    mov    dword ptr [rsp + 0x4c], r12d
+0x4100f4 <buildworldstate()+2164>    mov    rax, qword ptr [rdi]
+0x4100f7 <buildworldstate()+2167>    lea    rsi, [rsp + 0x44]
+0x4100fc <buildworldstate()+2172>    mov    edx, 0xc
+► 0x410101 <buildworldstate()+2177>    call   qword ptr [rax + 0x40]
+
+0x410104 <buildworldstate()+2180>    mov    rdi, qword ptr [rip + 0x3f595] <0x44f6a0>
+0x41010b <buildworldstate()+2187>    mov    rax, qword ptr [rdi]
+0x41010e <buildworldstate()+2190>    mov    rsi, rbx
+0x410111 <buildworldstate()+2193>    mov    edx, r12d
+0x410114 <buildworldstate()+2196>    call   qword ptr [rax + 0x40]
+───────────────────────────────────────────────[ SOURCE (CODE) ]───────────────────────────────────────────────
+In file: /home/elon/workspace/assaultcube/AC/source/src/server.cpp
+472 {
+473     if (!demorecord)
+474         return;
+475     int stamp[3] = {gamemillis, chan, len};
+476     lilswap(stamp, 3);
+► 477     demorecord->write(stamp, sizeof(stamp));
+478     demorecord->write(data, len);
+479 }
+480
+481 void recordpacket(int chan, void *data, int len)
+482 {
+───────────────────────────────────────────────────[ STACK ]───────────────────────────────────────────────────
+00:0000│ rsp  0x7ffdbaebfcc0 —▸ 0x102d8a0 —▸ 0x102d870 —▸ 0x10345a0 —▸ 0x1034570 ◂— ...
+01:0008│      0x7ffdbaebfcc8 ◂— 0x0
+02:0010│      0x7ffdbaebfcd0 —▸ 0x102d8b8 —▸ 0x102aa30 ◂— 0x6161610801b40058 /* 'X' */
+03:0018│      0x7ffdbaebfcd8 —▸ 0x102d8a8 ◂— 0x0
+04:0020│      0x7ffdbaebfce0 ◂— 0x0
+05:0028│      0x7ffdbaebfce8 —▸ 0x10423d0 ◂— 0x6262626161616108
+06:0030│      0x7ffdbaebfcf0 —▸ 0x102aa30 ◂— 0x6161610801b40058 /* 'X' */
+07:0038│      0x7ffdbaebfcf8 —▸ 0x102d8c4 ◂— 0x5f1000000b8
+─────────────────────────────────────────────────[ BACKTRACE ]─────────────────────────────────────────────────
+► f 0           410101 buildworldstate()+2177
+f 1           410101 buildworldstate()+2177
+f 2           410101 buildworldstate()+2177
+f 3           424dc2
+f 4           424dc2
+f 5           4261ea
+f 6           426269 main+89
+f 7     7f1ff31e90b3 __libc_start_main+243
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+

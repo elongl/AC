@@ -1,13 +1,34 @@
+# Exploit Chain
+- Place a pointer to a function to call at cl.skin.
+- Overwrite the capacity member of client.messages.
+- Send a message to myself (/me) to overflow the messages into demorecord's vtable and point it to cl.skin.
+# &SKIN MIGHT NOT BE ASCII. (flood clients until is?)
+
+
+
+# Requirements
+- Heap infoleak.
+
+
+
 # Lead
-- Overwrite members + vtable of demorecord.
-- Make isprint or isspace return true by overwriting their GOT.
-- See what's on the stack when invoking sscanf.
+- Pivot the stack into the heap, copy $rsi to $rdi, call system.
+- There appears to be a heap address after `name` after a client connects.
+- Corrupt msgsizelookup::sizetable, and then use the QUEUE_MSG to write non-ASCII to messages.
 
 
 
 # Ideas
-- Try to exploit the heap overflow not as the first client.
 - Overwriting the NULL terminator of name on client for infoleak purposes.
+
+
+
+# Desperate
+- Try to exploit the heap overflow not as the first client.
+
+
+
+# Unclear
 
 
 
