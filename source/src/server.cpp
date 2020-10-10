@@ -3233,7 +3233,6 @@ void process(ENetPacket *packet, int sender, int chan)
                         printf("(%d/%d): %s\n", cl->messages.ulen, cl->messages.alen, cl->messages.buf);
                         QUEUE_STR(text);
                         printf("(%d/%d): %s\n", cl->messages.ulen, cl->messages.alen, cl->messages.buf);
-
                     }
                     else // spect chat
                     {
@@ -4090,7 +4089,12 @@ void process(ENetPacket *packet, int sender, int chan)
                     disconnect_client(sender, DISC_TAGT);
                 return;
             }
-            loopi(size - 1) getint(p);
+            printf("Read: ");
+            loopi(size - 1)
+            {
+                printf("0x%x ", getint(p));
+            }
+            printf("\n");
             QUEUE_MSG;
             break;
         }
