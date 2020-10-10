@@ -267,9 +267,21 @@ void _toserver(char *text, int msg, int msgt)
     }
 }
 
+void senddata()
+{
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    loopi(1337)
+    {
+        putint(p, SV_SOUND);
+        putint(p, 0x123456);
+    }
+    sendpackettoserv(1, p.finalize());
+}
+
 void toserver(char *text)
 {
-    _toserver(text, SV_TEXT, SV_TEAMTEXT);
+    senddata();
+    // _toserver(text, SV_TEXT, SV_TEAMTEXT);
 }
 
 void toserverme(char *text)
