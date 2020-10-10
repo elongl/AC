@@ -4097,8 +4097,8 @@ void process(ENetPacket *packet, int sender, int chan)
         }
     }
 
-    // if (p.overread() && sender >= 0)
-    //     disconnect_client(sender, DISC_EOP);
+    if (p.overread() && sender >= 0)
+        disconnect_client(sender, DISC_EOP);
 
 #ifdef _DEBUG
     protocoldebug(false);
