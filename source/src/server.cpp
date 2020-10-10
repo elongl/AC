@@ -4083,7 +4083,7 @@ void process(ENetPacket *packet, int sender, int chan)
         default:
         {
             int size = msgsizelookup(type);
-            printf("Received default: %s\n", messagenames[type]);
+            printf("Received default: %s (%d)\n", messagenames[type], size);
             if (size <= 0)
             {
                 if (sender >= 0)
