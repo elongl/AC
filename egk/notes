@@ -3,16 +3,15 @@
 
 
 # Lead
-- Pivot the stack into the heap, change system's command towards messages, call system.
+- Syslog has a controllable format argument that can be used for a printf attack!
+- Write a pointer to the stack using a pointer to the stack, and then write to that address.
 
 
 
 # Ideas
-
-
-
-# Desperate
-- Try to exploit the heap overflow not as the first client.
+- Use deflate & inflate to copy data around memory, either using the original vtable, or by overwriting the vtable.
+- Writing to minremain or something similiar a pointer so that it'll be leaked as a "minutes remaining" message.
+- Use sscanf for infoleak.
 
 
 
