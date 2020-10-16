@@ -3,11 +3,12 @@
 
 
 # Lead
-- Overwrite the got entry of strcmp / strlen to system.
+- Push or pop an 8-byte sized value to the stack using a gadget into strlen, and then call system with strcmp.
 
 
 
 # Ideas
+- Overwriting lastsaytext and saychars to avoid spam detection.
 
 
 
