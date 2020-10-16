@@ -4,7 +4,8 @@
 
 
 # Ideas
-- Overwriting lastsaytext and saychars to avoid spam detection.
+- Overwriting lastsaytext and saychars to avoid spam detection, or connect as another client.
+- Change the vtable to an only ret gadget.
 
 
 
