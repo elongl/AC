@@ -1,7 +1,3 @@
-# Requirements
-
-
-
 # Lead
 - Push or pop an 8-byte sized value to the stack using a gadget into strlen, and then call system with strcmp.
 
@@ -12,16 +8,5 @@
 
 
 
-# Unclear
-
-
-
 # Notes
 - The other member that is being overwritten at spawnstate is events' buf.
-
-
-
-# History
-- Change the size of alen "legitimately" in order to get a different bin and see what memory lays there.
-- Parse all vtables in the executable (didn't work because cannot partially overwrite pointer to point to a different vtable)
-
