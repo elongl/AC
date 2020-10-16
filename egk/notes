@@ -5,9 +5,14 @@
 
 # Ideas
 - Overwriting lastsaytext and saychars to avoid spam detection, or connect as another client.
-- Change the vtable to an only ret gadget.
+
+
+
+# Backup Ideas
+- Bypass filtertext by overwriting isprint@got to ret, write binary data into demorecord.
 
 
 
 # Notes
 - The other member that is being overwritten at spawnstate is events' buf.
+
